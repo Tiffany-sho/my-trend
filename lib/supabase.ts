@@ -1,0 +1,17 @@
+import { createClient } from '@supabase/supabase-js'
+
+export type TrendNews = {
+  id: string
+  date: string
+  category: string
+  title: string
+  summary: string
+  url: string
+  interested: boolean | null
+  created_at: string
+}
+
+export const supabase = createClient<{ trend_news: { Row: TrendNews } }>(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
