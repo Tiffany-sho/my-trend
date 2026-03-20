@@ -19,7 +19,7 @@ export default async function TrendPage({
 
   const { data: trends } = category
     ? await query.eq('category', category)
-    : await query
+    : await query as { data: TrendNews[] | null }
 
   // Group by date
   const byDate: Record<string, TrendNews[]> = {}
