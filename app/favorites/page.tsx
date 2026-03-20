@@ -1,43 +1,30 @@
 import { supabase, TrendNews } from '@/lib/supabase'
-import CategoryFilter from '@/components/CategoryFilter'
-import InterestButtons from '@/components/InterestButtons'
 import FavoriteButton from '@/components/FavoriteButton'
 
 export const dynamic = 'force-dynamic'
 
-export default async function TrendPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ category?: string }>
-}) {
-  const { category } = await searchParams
-
-  const query = supabase
+export default async function FavoritesPage() {
+  const { data: favorites } = await supabase
     .from('trend_news')
     .select('*')
+    .eq('favorited', true)
     .order('date', { ascending: false })
     .order('created_at', { ascending: true })
 
-  const { data: trends } = category
-    ? await query.eq('category', category)
-    : await query as { data: TrendNews[] | null }
-
   // Group by date
   const byDate: Record<string, TrendNews[]> = {}
-  for (const item of trends ?? []) {
+  for (const item of favorites ?? []) {
     if (!byDate[item.date]) byDate[item.date] = []
     byDate[item.date].push(item)
   }
 
   return (
     <main className="max-w-3xl mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-2">トレンドニュース</h1>
-      <p className="text-sm text-gray-500 mb-6">計算物理・プログラミング・AI・数学・効率化の最新動向</p>
-
-      <CategoryFilter selected={category} />
+      <h1 className="text-2xl font-bold mb-2">お気に入り</h1>
+      <p className="text-sm text-gray-500 mb-8">登録した記事は削除されません</p>
 
       {Object.keys(byDate).length === 0 && (
-        <p className="text-gray-400 text-sm">データがありません</p>
+        <p className="text-gray-400 text-sm">お気に入り登録した記事がありません</p>
       )}
 
       {Object.entries(byDate).map(([date, items]) => (
@@ -47,7 +34,7 @@ export default async function TrendPage({
           </h2>
           <div className="space-y-3">
             {items.map((item) => (
-              <article key={item.id} className="bg-white rounded-lg border border-gray-200 p-4">
+              <article key={item.id} className="bg-white rounded-lg border border-yellow-200 p-4">
                 <div className="flex items-start justify-between gap-3 mb-2">
                   <a
                     href={item.url}
@@ -62,8 +49,7 @@ export default async function TrendPage({
                   </span>
                 </div>
                 <p className="text-sm text-gray-600 leading-relaxed">{item.summary}</p>
-                <div className="flex items-center gap-3 mt-3">
-                  <InterestButtons id={item.id} interested={item.interested} />
+                <div className="mt-3">
                   <FavoriteButton id={item.id} favorited={item.favorited} />
                 </div>
               </article>

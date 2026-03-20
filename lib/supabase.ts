@@ -8,6 +8,7 @@ export type TrendNews = {
   summary: string
   url: string
   interested: boolean | null
+  favorited: boolean
   created_at: string
 }
 
