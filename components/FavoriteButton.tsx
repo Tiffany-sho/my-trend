@@ -14,21 +14,21 @@ export default function FavoriteButton({
   const [loading, setLoading] = useState(false)
 
   const handleClick = async () => {
-    if (loading || state) return // 登録済みは解除不可
+    if (loading) return
     setLoading(true)
-    await supabase.from('trend_news').update({ favorited: true }).eq('id', id)
-    setState(true)
+    await supabase.from('trend_news').update({ favorited: !state }).eq('id', id)
+    setState(!state)
     setLoading(false)
   }
 
   return (
     <button
       onClick={handleClick}
-      disabled={loading || state}
-      title={state ? 'お気に入り登録済み（削除されません）' : 'お気に入りに登録する'}
-      className={`text-xs px-3 py-1 rounded-full border transition-colors disabled:cursor-default ${
+      disabled={loading}
+      title={state ? 'お気に入りを解除する' : 'お気に入りに登録する'}
+      className={`text-xs px-3 py-1 rounded-full border transition-colors ${
         state
-          ? 'bg-yellow-400 border-yellow-400 text-white'
+          ? 'bg-yellow-400 border-yellow-400 text-white hover:bg-yellow-500'
           : 'border-gray-300 text-gray-500 hover:border-yellow-400 hover:text-yellow-600'
       }`}
     >
